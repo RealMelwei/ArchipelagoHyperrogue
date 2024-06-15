@@ -1,29 +1,16 @@
-from typing import Dict, List
-
+from typing import Callable, Dict
 from BaseClasses import CollectionState
-from worlds.generic.Rules import set_rule
+from .Regions import *
 
-from . import HyperrogueWorld
-from .Names import ItemName, LocationName
+Rule = Callable[[CollectionState],bool]
 
+basic_access_rules: Dict[str,Rule]
 
-def set_rules(world: HyperrogueWorld):
-    world.active_logic_mapping = {}
+def init_basic_access_rules(player):
+    basic_access_rules = {regionname : (lambda state : check_basic_access_rule(regionname,state,player))
+                                     for regionname in regionlist}
 
-    # Completion condition.
-    world.multiworld.completion_condition[world.player] = lambda state: goal_rule(state, world)
-
-def location_rule(state: CollectionState, world: HyperrogueWorld, loc: str) -> bool:
-    return True
-#    if loc not in world.active_logic_mapping:
-#        return True
-
-#    for possible_access in world.active_logic_mapping[loc]:
-#        if state.has_all(possible_access, world.player):
-#            return True
-
-#    return False
-
-def goal_rule(state: CollectionState, world: HyperrogueWorld) -> bool:
-    if state.has(ItemName.demon_daisy, world.player, 2): return True
-    return False
+def check_basic_access_rule(regionname:str, state:CollectionState, player)->bool:
+    if regionname in technical_regions:
+        return True
+    return state.has(regionname, player)
