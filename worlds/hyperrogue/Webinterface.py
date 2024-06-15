@@ -1,4 +1,6 @@
+from typing import List
 from BaseClasses import Tutorial
+from Options import OptionGroup
 from worlds.AutoWorld import WebWorld
 from.Options import *
 
@@ -16,4 +18,4 @@ class HyperrogueWebWorld(WebWorld):
 
     tutorials = [setup_en]
 
-    option_groups = []
+    option_groups:List[OptionGroup] = []

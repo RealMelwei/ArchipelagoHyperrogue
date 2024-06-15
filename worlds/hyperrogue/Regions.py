@@ -21,7 +21,7 @@ region_connections: Dict[str, List[str]] = {
     "Vineyard":                 ["Non-Sea Great Wall"],
     "Dead Cave":                ["Non-Sea Great Wall"],
     "Hive":                     ["Non-Sea Great Wall"],
-    "Emerald Mines":            ["Non-Sea Great Wall"],
+    "Emerald Mine":            ["Non-Sea Great Wall"],
     "Land of Power":            ["Non-Sea Great Wall"],
     "Camelot":                  ["Non-Sea Great Wall"],
     "Temple of Cthulhu":        ["R'Lyeh"],

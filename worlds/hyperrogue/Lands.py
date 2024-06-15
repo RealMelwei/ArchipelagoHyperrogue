@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 landtable: Dict[str, int] = {
     "Icy Land":                 0x00,
@@ -16,9 +16,9 @@ landtable: Dict[str, int] = {
     "Vineyard":                 0x0C,
     "Dead Cave":                0x0D,
     "Hive":                     0x0E,
-    "Emerald Mines":            0x0F,
+    "Emerald Mine":             0x0F,
     "Land of Power":            0x10,
-    "Camelot":                  0x11,
+    # Camelot is a special land, hence at the bottom
     "Temple of Cthulhu":        0x12,
     "Carribean":                0x13,
     "Red Rock Valley":          0x14,
@@ -62,4 +62,8 @@ landtable: Dict[str, int] = {
     "Eclectic City":            0x3A,
     "Cursed Canyon":            0x3B,
     "Dice Reserve":             0x3C,
+    # Special lands
+    "Camelot":                  0x11,
 }
+
+landlist: List[str] = landtable.keys()
