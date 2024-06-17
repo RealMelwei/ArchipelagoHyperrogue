@@ -3,7 +3,7 @@ from typing import Dict, List
 technical_regions: List[str] = ["Menu","Non-Sea Great Wall","Sea Great Wall"]
 
 region_connections: Dict[str, List[str]] = {
-    "Menu":                     ["Icy Land"],
+    "Menu":                     ["Non-Sea Great Wall"],
     "Non-Sea Great Wall":       [],
     "Sea Great Wall":           ["Carribean","Ocean","Living Fjord","Warped Coast","Kraken Depths"],
     "Icy Land":                 ["Non-Sea Great Wall"],

@@ -10,7 +10,7 @@ from .Lands import landtable, landlist
 from .Regions import *
 from .Rules import *
 
-hyperrogue_base_id = 0xCBA00000
+hyperrogue_base_id = 0xCBA000
 
 # Contains every suffix for the type of location and its corresponding base id
 location_suffixes: Dict[str,int] = {
@@ -28,8 +28,9 @@ class HyperrogueWorld(World):
 
     game = "Hyperrogue"
 
-    item_name_to_id = {land_name : land_id + hyperrogue_base_id
-                       for land_name, land_id in landtable.items()}
+    item_name_to_id = {**{land_name : land_id + hyperrogue_base_id
+                       for land_name, land_id in landtable.items()},
+                       **{"Crossroads" : hyperrogue_base_id - 1}}
     
     # Assigns to each land the number of already created items for that land:
     # This is relevant, as (except for R'Lyeh + Temple of Cthulhu) exactly the first check
@@ -67,6 +68,11 @@ class HyperrogueWorld(World):
             for land_name in landlist
         })
 
+        # Add a crossroads location for initialization purposes
+        menu.add_locations({
+            "Crossroads" : hyperrogue_base_id - 1
+        })
+
         # Add connections according to the region_connections dictionary
         for region_name, connecting_regions in region_connections.items():
             region = self.multiworld.get_region(region_name,self.player)
@@ -86,6 +92,8 @@ class HyperrogueWorld(World):
         nSGW.connect(rLyeh, None, lambda state: 
                      state.has("R'Lyeh", self.player, 2) or state.has("Temple of Cthulhu", self.player, 2)
                      and get_basic_access_rule("R'Lyeh",self.player))
+        
+
     
     def create_item(self, name: str) -> Item:
         # R'Lyeh 10 Treasures and Temple of Cthulhu 10 Treasures are progression relevant,
@@ -101,6 +109,10 @@ class HyperrogueWorld(World):
         self.multiworld.itempool += [self.create_item(land_name)
                                      for land_name in landlist
                                      for i in range (4)]
+        # Add Crossroads item and lock it into Crossroads location for initialization purposes
+        cr : Item = Item("Crossroads", ItemClassification.progression_skip_balancing, hyperrogue_base_id - 1, self.player)
+        self.get_location("Crossroads").place_locked_item(cr)
+        self.multiworld.push_precollected(cr)
         
     def set_rules(self) -> None:
         # Add Location Rules
@@ -111,8 +123,6 @@ class HyperrogueWorld(World):
         
         # Add Goal Rule
         self.multiworld.completion_condition[self.player] = get_completion_rule(self.player)
-
-
 
     def fill_slot_data(self):
         return {

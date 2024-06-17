@@ -101,7 +101,7 @@ unlock_condition_by_land_name: Dict[str, Ruleset] = {
     "Living Fjord":             Ruleset([["Anyland"]]),
     "Ivory Tower":              Ruleset([["Anyland"]]),
     "Zebra":                    Ruleset([["Land of Eternal Motion"]]),
-    "Elemental Planes":         Ruleset([["Windy Plains", "Living Fjord", "Dead Cave", "Dragon Chasms"]]),
+    "Elemental Planes":         Ruleset([["Windy Plains", "Living Fjord", "Dead Cave", "Dragon Chasms"],["Elemental Planes"]]),
     "Land of Storms":           Ruleset([["Anyland"]]),
     "Overgrown Woods":          Ruleset([["Jungle"]]),
     "Clearing":                 Ruleset([["Overgrown Woods"]]),
