@@ -4,7 +4,6 @@ from typing import Callable, Dict, List
 from BaseClasses import CollectionState, Item, ItemClassification, Location, Region, Tutorial
 from worlds.AutoWorld import WebWorld, World
 from worlds.hyperrogue.Webinterface import HyperrogueWebWorld
-from worlds.zork_grand_inquisitor.data_funcs import location_names_to_id
 from .Options import HyperrogueOptions
 from .Lands import landtable, landlist
 from .Regions import *
@@ -127,6 +126,7 @@ class HyperrogueWorld(World):
     def fill_slot_data(self):
         return {
             "death_link": self.options.death_link.value,
+            "goal": self.options.goal.value
         }
 
 
