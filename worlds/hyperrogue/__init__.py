@@ -44,6 +44,11 @@ class HyperrogueWorld(World):
     web = HyperrogueWebWorld()
 
     def generate_early(self) -> None:
+        # Exclude high treasure locations from the game depending on settings
+        if self.options.treasure_requirements<50:
+            del location_suffixes["50 Treasures"]
+        if self.options.treasure_requirements<25:
+            del location_suffixes["25 Treasures"]
         pass
 
     def create_regions(self) -> None:
@@ -107,7 +112,7 @@ class HyperrogueWorld(World):
     def create_items(self) -> None:
         self.multiworld.itempool += [self.create_item(land_name)
                                      for land_name in landlist
-                                     for i in range (4)]
+                                     for suff in location_suffixes.keys()]
         # Add Crossroads item and lock it into Crossroads location for initialization purposes
         cr : Item = Item("Crossroads", ItemClassification.progression_skip_balancing, hyperrogue_base_id - 1, self.player)
         self.get_location("Crossroads").place_locked_item(cr)

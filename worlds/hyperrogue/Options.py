@@ -17,7 +17,18 @@ class Goal(Choice):
     option_orb_of_yendor = 2
     default = 2
 
+class TreasureRequirements(Choice):
+    """
+    The treasure numbers per land included in the randomization.
+    """
+    display_name = "Treasure Requirements"
+    option_10 = 10
+    option_25 = 25
+    option_50 = 50
+    default = 25
+
 @dataclass
 class HyperrogueOptions(PerGameCommonOptions):
     death_link: DeathLink
     goal: Goal
+    treasure_requirements: TreasureRequirements
