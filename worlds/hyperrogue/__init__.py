@@ -131,7 +131,8 @@ class HyperrogueWorld(World):
     def fill_slot_data(self):
         return {
             "death_link": self.options.death_link.value,
-            "goal": self.options.goal.value
+            "goal": self.options.goal.value,
+            "starting_land": self.options.starting_land.value
         }
 
 
