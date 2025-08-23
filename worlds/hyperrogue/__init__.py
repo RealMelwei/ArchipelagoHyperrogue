@@ -125,7 +125,7 @@ class HyperrogueWorld(World):
                                      for land_name in landlist
                                      for suff in self.active_location_suffixes.keys()]
         # Add Crossroads item and lock it into Crossroads location for initialization purposes
-        cr : HyperrogueItem = self.create_item(self, "Crossroads")
+        cr : HyperrogueItem = self.create_item("Crossroads")
         self.get_location("Crossroads").place_locked_item(cr)
         self.multiworld.push_precollected(cr)
         
