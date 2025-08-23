@@ -109,6 +109,8 @@ class HyperrogueWorld(World):
 
     
     def create_item(self, name: str) -> HyperrogueItem:
+        if(name=="Crossroads"):
+            return HyperrogueItem("Crossroads", ItemClassification.progression_skip_balancing, hyperrogue_base_id - 1, player=self.player)
         # R'Lyeh 10 Treasures and Temple of Cthulhu 10 Treasures are progression relevant,
         # as they allow R'Lyeh to spawn on land
         relevant_progress = 2 if name in ["R'Lyeh", "Temple of Cthulhu"] else 1
@@ -123,7 +125,7 @@ class HyperrogueWorld(World):
                                      for land_name in landlist
                                      for suff in self.active_location_suffixes.keys()]
         # Add Crossroads item and lock it into Crossroads location for initialization purposes
-        cr : HyperrogueItem = HyperrogueItem("Crossroads", ItemClassification.progression_skip_balancing, hyperrogue_base_id - 1, player=self.player)
+        cr : HyperrogueItem = self.create_item(self, "Crossroads")
         self.get_location("Crossroads").place_locked_item(cr)
         self.multiworld.push_precollected(cr)
         
