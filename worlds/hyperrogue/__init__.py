@@ -34,7 +34,8 @@ class HyperrogueWorld(World):
     # Assigns to each land the number of already created items for that land:
     # This is relevant, as (except for R'Lyeh + Temple of Cthulhu) exactly the first check
     # in each land is relevant for progression.
-    item_creation_progress: Dict[str,int] = {}
+    item_creation_progress: Dict[str,int] = {land_name : 0
+                                  for land_name in landlist}
     
     item_name_to_id = {**{land_name : land_id + hyperrogue_base_id
                    for land_name, land_id in landtable.items()},
@@ -49,8 +50,6 @@ class HyperrogueWorld(World):
     web = HyperrogueWebWorld()
 
     def generate_early(self) -> None:
-        self.item_creation_progress = {land_name : 0
-                                  for land_name in landlist}
         self.active_location_suffixes = deepcopy(location_suffixes)
         # Exclude high treasure locations from the game depending on settings
         if self.options.treasure_requirements.value<50:
