@@ -46,7 +46,7 @@ class StartingLand(Choice):
     option_hall_of_mirrors          =0x05
     option_graveyard                =0x06
     option_hell                     =0x07
-    option_rLyeh                    =0x08
+#    option_rLyeh                    =0x08
     option_land_of_eternal_motion   =0x09
     option_cocytus                  =0x0A
     option_dry_forest               =0x0B
@@ -55,7 +55,7 @@ class StartingLand(Choice):
     option_hive                     =0x0E
     option_emerald_mine             =0x0F
     option_land_of_power            =0x10
-    option_carribean                =0x13
+#    option_carribean                =0x13
     option_red_rock_valley          =0x14
     option_minefield                =0x15
     option_ocean                    =0x16
@@ -68,7 +68,7 @@ class StartingLand(Choice):
     option_windy_plains             =0x21
     option_rose_garden              =0x22
     option_warped_coast             =0x23
-    option_galapagos                =0x24 
+#    option_galapagos                =0x24 
     option_dragon_chasms            =0x26
     option_burial_grounds           =0x28
     option_trollheim                =0x29
@@ -81,7 +81,7 @@ class StartingLand(Choice):
     option_terracotta_army          =0x32
     option_ruined_city              =0x33
     option_jelly_kingdom            =0x34
-    option_brown_island             =0x35
+#    option_brown_island             =0x35
     option_irradiated_field         =0x37
     option_wetland                  =0x38
     option_frog_park                =0x39
