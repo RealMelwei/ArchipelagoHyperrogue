@@ -59,7 +59,6 @@ class HyperrogueWorld(World):
         pass
 
     def create_regions(self) -> None:
-        print(self.active_location_suffixes)
         # Create regions and add them to the multiworld
         self.multiworld.regions.extend(Region(region_name, self.player, self.multiworld) 
                                        for region_name in regionlist)
@@ -112,7 +111,7 @@ class HyperrogueWorld(World):
             return HyperrogueItem("Crossroads", ItemClassification.progression_skip_balancing, hyperrogue_base_id - 1, player=self.player)
         # R'Lyeh 10 Treasures and Temple of Cthulhu 10 Treasures are progression relevant,
         # as they allow R'Lyeh to spawn on land
-        relevant_progress = 2 if name in ["R'Lyeh", "Temple of Cthulhu"] else 1
+        relevant_progress = 2 if name in ["R'Lyeh", "Temple of Cthulhu"] or self.options.logic_difficulty == 0 else 1
         self.item_creation_progress[name] += 1
         if self.item_creation_progress[name] <= relevant_progress:
             return HyperrogueItem(name, ItemClassification.progression, self.item_name_to_id[name], player=self.player)
@@ -130,15 +129,15 @@ class HyperrogueWorld(World):
         
     def set_rules(self) -> None:
         # Add Location Rules
-        unlock_locations: Dict[str, Location] = {land_name : self.get_location(f"{land_name} Unlock")
+        locations: Dict[str, Dict[str, Location]] = {land_name : {suffix : self.get_location(f"{land_name} {suffix}") 
+                                                                  for suffix in self.active_location_suffixes}
                                                  for land_name in landlist}
-        for land_name, loc in unlock_locations.items():
-            loc.access_rule = get_location_unlock_rule(land_name, self.player)
+        for land_name, locs in locations.items():
+            for suffix, loc in locs.items():
+                loc.access_rule = get_location_rule(land_name, suffix, self.player)
         
         # Add Goal Rule
         self.multiworld.completion_condition[self.player] = get_completion_rule(self.player)
-
-        print(self.multiworld.completion_condition)
 
     def fill_slot_data(self):
         return {

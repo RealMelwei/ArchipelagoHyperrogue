@@ -36,7 +36,7 @@ class StartingLand(Choice):
     option_crossroads_2             =-2
     option_crossroads_3             =-3
     option_crossroads_4             =-4
-    option_crossroads_5             =-5
+ #   option_crossroads_5             =-5
     option_random_unlocked_land     =-10
     option_icy_land                 =0x00
     option_living_cave              =0x01
@@ -91,9 +91,18 @@ class StartingLand(Choice):
 
     default                         =-1
 
+class LogicDifficulty(Choice):
+    """
+    Whether logic assures you have helpful orbs before attempting to reach 25 or 50 in a given land.
+    """
+    display_name = "Logic Difficulty"
+    option_normal = 0
+    option_hard = 1
+
 @dataclass
 class HyperrogueOptions(PerGameCommonOptions):
     death_link: DeathLink
     goal: Goal
     treasure_requirements: TreasureRequirements
     starting_land: StartingLand
+    logic_difficulty: LogicDifficulty

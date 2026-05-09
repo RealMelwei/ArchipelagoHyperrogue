@@ -55,7 +55,9 @@ class Ruleset:
                 return True
 
         return False
-        
+
+def get_option(state: CollectionState, player, option_name:str):
+    return getattr(state.multiworld.worlds[player].options, option_name).value
 
 def get_basic_access_rule(regionname, player) -> Rule:
     return (lambda state : check_basic_access_rule(regionname,state,player))
@@ -65,8 +67,16 @@ def check_basic_access_rule(regionname:str, state:CollectionState, player)->bool
         return True
     return state.has(regionname, player)
 
-def get_location_unlock_rule(land_name:str, player) -> Rule:
-    return lambda state: unlock_condition_by_land_name[land_name].satisfied(state, player)
+def get_location_rule(land_name:str, suffix:str, player) -> Rule:
+    return (lambda state : check_location_rule(land_name, suffix, state, player))
+
+def check_location_rule(land_name:str, suffix:str, state:CollectionState, player):
+    if suffix == "Unlock":
+        return unlock_condition_by_land_name[land_name].satisfied(state, player)
+    if suffix == "10 Treasures" or get_option(state, player, "logic_difficulty") == 1:
+        return state.has(land_name, player)
+    else:
+        return state.has(land_name, player, 2)
 
 def get_completion_rule(player) -> Rule:
     return lambda state: Ruleset([["Alllands"]]).satisfied(state, player)
