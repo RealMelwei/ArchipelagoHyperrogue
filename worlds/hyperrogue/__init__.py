@@ -3,7 +3,7 @@ from typing import Callable, Dict, List
 
 from BaseClasses import CollectionState, Item, ItemClassification, Location, Region, Tutorial
 from worlds.AutoWorld import WebWorld, World
-from worlds.hyperrogue.Webinterface import HyperrogueWebWorld
+from .Webinterface import HyperrogueWebWorld
 from .Options import HyperrogueOptions
 from .Lands import landtable, landlist
 from .Regions import *
@@ -31,16 +31,9 @@ class HyperrogueWorld(World):
 
     game = "Hyperrogue"
 
-    # Assigns to each land the number of already created items for that land:
-    # This is relevant, as (except for R'Lyeh + Temple of Cthulhu) exactly the first check
-    # in each land is relevant for progression.
-    item_creation_progress: Dict[str,int] = {land_name : 0
-                                  for land_name in landlist}
-    
     item_name_to_id = {**{land_name : land_id + hyperrogue_base_id
-                   for land_name, land_id in landtable.items()},
-                   **{"Crossroads" : hyperrogue_base_id - 1}}
-
+                    for land_name, land_id in landtable.items()},
+                    **{"Crossroads" : hyperrogue_base_id - 1}}
     location_name_to_id = {f"{land_name} {suff}" : land_id + hyperrogue_base_id + suff_id
                                     for land_name, land_id in landtable.items()
                                     for suff, suff_id in location_suffixes.items()}
@@ -49,6 +42,16 @@ class HyperrogueWorld(World):
 
     web = HyperrogueWebWorld()
 
+    def __init__(self, multiworld, player):
+        # Assigns to each land the number of already created items for that land:
+        # This is relevant, as on hard logic (except for R'Lyeh + Temple of Cthulhu) exactly the first check
+        # in each land is relevant for progression.
+        self.item_creation_progress = {land_name : 0
+                                        for land_name in landlist}
+        
+        super().__init__(multiworld, player)
+        
+        
     def generate_early(self) -> None:
         self.active_location_suffixes = deepcopy(location_suffixes)
         # Exclude high treasure locations from the game depending on settings
@@ -77,11 +80,6 @@ class HyperrogueWorld(World):
         menu.add_locations({
             f"{land_name} Unlock" : self.location_name_to_id[f"{land_name} Unlock"]
             for land_name in landlist
-        })
-
-        # Add a crossroads location for initialization purposes
-        menu.add_locations({
-            "Crossroads" : hyperrogue_base_id - 1
         })
 
         # Add connections according to the region_connections dictionary
@@ -124,7 +122,6 @@ class HyperrogueWorld(World):
                                      for suff in self.active_location_suffixes.keys()]
         # Add Crossroads item and lock it into Crossroads location for initialization purposes
         cr : HyperrogueItem = self.create_item("Crossroads")
-        self.get_location("Crossroads").place_locked_item(cr)
         self.multiworld.push_precollected(cr)
         
     def set_rules(self) -> None:
@@ -144,7 +141,8 @@ class HyperrogueWorld(World):
             "death_link": self.options.death_link.value,
             "goal": self.options.goal.value,
             "starting_land": self.options.starting_land.value,
-            "treasure_requirements": self.options.treasure_requirements.value
+            "treasure_requirements": self.options.treasure_requirements.value,
+            "hint_orb": self.options.hint_orb.value
         }
 
 

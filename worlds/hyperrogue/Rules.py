@@ -3,7 +3,7 @@ from BaseClasses import CollectionState
 from .Regions import *
 from .Lands import landlist
 
-Rule = Callable[[CollectionState],bool]
+HRRule = Callable[[CollectionState],bool]
 
 # An object of type Ruleset defines a ruleset for the unlock of a land
 class Ruleset:
@@ -59,7 +59,7 @@ class Ruleset:
 def get_option(state: CollectionState, player, option_name:str):
     return getattr(state.multiworld.worlds[player].options, option_name).value
 
-def get_basic_access_rule(regionname, player) -> Rule:
+def get_basic_access_rule(regionname, player) -> HRRule:
     return (lambda state : check_basic_access_rule(regionname,state,player))
 
 def check_basic_access_rule(regionname:str, state:CollectionState, player)->bool:
@@ -67,7 +67,7 @@ def check_basic_access_rule(regionname:str, state:CollectionState, player)->bool
         return True
     return state.has(regionname, player)
 
-def get_location_rule(land_name:str, suffix:str, player) -> Rule:
+def get_location_rule(land_name:str, suffix:str, player) -> HRRule:
     return (lambda state : check_location_rule(land_name, suffix, state, player))
 
 def check_location_rule(land_name:str, suffix:str, state:CollectionState, player):
@@ -78,7 +78,7 @@ def check_location_rule(land_name:str, suffix:str, state:CollectionState, player
     else:
         return state.has(land_name, player, 2)
 
-def get_completion_rule(player) -> Rule:
+def get_completion_rule(player) -> HRRule:
     return lambda state: Ruleset([["Alllands"]]).satisfied(state, player)
 
 
@@ -134,7 +134,7 @@ unlock_condition_by_land_name: Dict[str, Ruleset] = {
     "Hunting Ground":           Ruleset([["Always"]]),
     "Blizzard":                 Ruleset([["Icy Land", "Windy Plains"]]),
     "Terracotta Army":          Ruleset([["Anyland"]]), #90
-    "Ruined City":              Ruleset([["Palace"],["Ruined City"],["Dungeon"],["Irradiated Field"],[]]),
+    "Ruined City":              Ruleset([["Palace"],["Ruined City"],["Dungeon"],["Irradiated Field"]]),
     "Jelly Kingdom":            Ruleset([["Alchemist Lab"]]),
     "Brown Island":             Ruleset([["Anyland"]]),
     "Free Fall":                Ruleset([["Ivory Tower", "Land of Eternal Motion"]]),

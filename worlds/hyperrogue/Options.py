@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import Choice, DeathLink, PerGameCommonOptions
+from Options import Choice, DeathLink, PerGameCommonOptions, Toggle
 
 class Goal(Choice):
     """
@@ -99,6 +99,12 @@ class LogicDifficulty(Choice):
     option_normal = 0
     option_hard = 1
 
+class HintOrbs(Toggle):
+    """
+    When this setting is activated, once you have at least 10 treasures in any land, Orbs of Foresight can spawn in that land. When an Orb of Foresight is collected, the next available location in that land is hinted.
+    """
+    display_name = "Hint Orbs"
+
 @dataclass
 class HyperrogueOptions(PerGameCommonOptions):
     death_link: DeathLink
@@ -106,3 +112,4 @@ class HyperrogueOptions(PerGameCommonOptions):
     treasure_requirements: TreasureRequirements
     starting_land: StartingLand
     logic_difficulty: LogicDifficulty
+    hint_orb: HintOrbs
