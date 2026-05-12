@@ -87,20 +87,17 @@ class HyperrogueWorld(World):
             region = self.multiworld.get_region(region_name,self.player)
             for target_region_name in connecting_regions:
                 target_region = self.multiworld.get_region(target_region_name,self.player)
-                region.connect(target_region,None,get_basic_access_rule(target_region_name,self.player))
+                region.connect(target_region, None, get_basic_access_rule(target_region_name))
                 # Add reverse direction for connections to "Non-Sea Great Wall",
                 # as these are not listed in region_connections
                 if target_region_name == "Non-Sea Great Wall":
-                    target_region.connect(region,None,get_basic_access_rule(region_name,self.player))
+                    target_region.connect(region, None, get_basic_access_rule(region_name))
         
         # R'Lyeh completion allows R'Lyeh to spawn on land
         rLyeh = self.multiworld.get_region("R'Lyeh",self.player)
         nSGW = self.multiworld.get_region("Non-Sea Great Wall",self.player)
-        rLyeh.connect(nSGW, None, lambda state: 
-                      state.has("R'Lyeh", self.player, 2) or state.has("Temple of Cthulhu", self.player, 2))
-        nSGW.connect(rLyeh, None, lambda state: 
-                     state.has("R'Lyeh", self.player, 2) or state.has("Temple of Cthulhu", self.player, 2)
-                     and get_basic_access_rule("R'Lyeh",self.player))
+        rLyeh.connect(nSGW, None, Has("R'Lyeh", 2) | Has("Temple of Cthulhu", 2))
+        nSGW.connect(rLyeh, None, Has("R'Lyeh", 2) | ( Has("Temple of Cthulhu", 2) & get_basic_access_rule("R'Lyeh")))
         
 
     
@@ -131,10 +128,10 @@ class HyperrogueWorld(World):
                                                  for land_name in landlist}
         for land_name, locs in locations.items():
             for suffix, loc in locs.items():
-                loc.access_rule = get_location_rule(land_name, suffix, self.player)
+                self.set_rule(loc, get_location_rule(land_name, suffix))
         
         # Add Goal Rule
-        self.multiworld.completion_condition[self.player] = get_completion_rule(self.player)
+        self.set_completion_rule(get_completion_rule())
 
     def fill_slot_data(self):
         return {
