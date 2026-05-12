@@ -3,12 +3,13 @@ from BaseClasses import CollectionState
 from .Regions import *
 from .Lands import landlist
 from rule_builder.rules import *
-from .Options import LogicDifficulty
+from .Options import *
 
 # CODE TO REMOVE IN ARCHIPELAGO 0.6.8
 from rule_builder import rules
 
 hard_logic_difficulty = [OptionFilter(LogicDifficulty, LogicDifficulty.option_hard)]
+yendor_goal = [OptionFilter(Goal, Goal.option_orb_of_yendor)]
 
 # An object of type Ruleset defines a ruleset for the unlock of a land
 class UnlockCondition:
@@ -64,11 +65,11 @@ def get_location_rule(land_name:str, suffix:str) -> Rule:
     elif suffix == "10 Treasures":
         return Has(land_name)
     else:
-        return Has(land_name, 2) | Has(land_name, options=hard_logic_difficulty)
+        return Has(land_name, 2) | (Has(land_name) & hard_logic_difficulty)
     
 
 def get_completion_rule() -> Rule:
-    return UnlockCondition([["Alllands"]]).get_rule()
+    return (UnlockCondition([["Min9"]]).get_rule() & yendor_goal) | UnlockCondition([["Alllands"]]).get_rule()
 
 
 unlock_condition_by_land_name: Dict[str, UnlockCondition] = {
