@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import Choice, DeathLink, PerGameCommonOptions, Toggle
+from Options import Choice, DeathLink, PerGameCommonOptions, Toggle, Range
 
 class Goal(Choice):
     """
@@ -105,6 +105,33 @@ class HintOrbs(Toggle):
     """
     display_name = "Hint Orbs"
 
+class ExtraLocation10(Toggle):
+    """
+    Adds an extra location for 10 Treasures in each land
+    """
+    display_name = "Extra 10 Treasures Location"
+
+class ExtraLocation25(Toggle):
+    """
+    Adds an extra location for 10 Treasures in each land
+    """
+    display_name = "Extra 25 Treasures Location"
+
+class ExtraLocation50(Toggle):
+    """
+    Adds an extra location for 10 Treasures in each land
+    """
+    display_name = "Extra 50 Treasures Location"
+
+class StartOrbFillPercentage(Range):
+    """
+    The percentage of filler items replaced by Starting Orbs - Orbs which are placed in your inventory at the start of each run.
+    """
+    display_name = "Starting Orb Filler Percentage"
+    range_start = 0
+    range_end = 100
+    default = 0
+
 @dataclass
 class HyperrogueOptions(PerGameCommonOptions):
     death_link: DeathLink
@@ -113,3 +140,7 @@ class HyperrogueOptions(PerGameCommonOptions):
     starting_land: StartingLand
     logic_difficulty: LogicDifficulty
     hint_orb: HintOrbs
+    extra_location_10: ExtraLocation10
+    extra_location_25: ExtraLocation25
+    extra_location_50: ExtraLocation50
+    start_orb_fill_percentage: StartOrbFillPercentage

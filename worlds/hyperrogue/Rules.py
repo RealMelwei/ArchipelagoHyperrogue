@@ -1,7 +1,7 @@
 from typing import Callable, Dict
 from BaseClasses import CollectionState
 from .Regions import *
-from .Lands import landlist
+from .Names import landlist
 from rule_builder.rules import *
 from .Options import *
 
@@ -62,14 +62,14 @@ def get_basic_access_rule(regionname) -> Rule:
 def get_location_rule(land_name:str, suffix:str) -> Rule:
     if suffix == "Unlock":
         return unlock_condition_by_land_name[land_name].get_rule()
-    elif suffix == "10 Treasures":
+    elif suffix == "10 Treasures" or suffix == "10 Treasures Extra":
         return Has(land_name)
     else:
         return Has(land_name, 2) | (Has(land_name) & hard_logic_difficulty)
     
 
 def get_completion_rule() -> Rule:
-    return (UnlockCondition([["Min9"]]).get_rule() & yendor_goal) | UnlockCondition([["Alllands"]]).get_rule()
+    return (Has("Hell", 2) & yendor_goal) | UnlockCondition([["Alllands"]]).get_rule()
 
 
 unlock_condition_by_land_name: Dict[str, UnlockCondition] = {
@@ -89,7 +89,7 @@ unlock_condition_by_land_name: Dict[str, UnlockCondition] = {
     "Dead Cave":                UnlockCondition([["Living Cave"]]),
     "Hive":                     UnlockCondition([["Anyland"]]),
     "Emerald Mine":             UnlockCondition([["Palace"],["Dry Forest","Living Cave"]]),
-    "Land of Power":            UnlockCondition([["Anyland"]]), #90
+    "Land of Power":            UnlockCondition([["Hell"]]), #90
     "Camelot":                  UnlockCondition([["Emerald Mine"]]),
     "Temple of Cthulhu":        UnlockCondition([["R'Lyeh"]]),
     "Carribean":                UnlockCondition([["Anyland"]]),
