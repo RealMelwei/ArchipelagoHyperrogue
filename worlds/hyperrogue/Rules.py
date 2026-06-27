@@ -10,6 +10,9 @@ from rule_builder import rules
 
 hard_logic_difficulty = [OptionFilter(LogicDifficulty, LogicDifficulty.option_hard)]
 yendor_goal = [OptionFilter(Goal, Goal.option_orb_of_yendor)]
+required_treasures_25 = [OptionFilter(TreasureRequirements, TreasureRequirements.option_25)]
+required_treasures_50 = [OptionFilter(TreasureRequirements, TreasureRequirements.option_50)]
+
 
 # An object of type Ruleset defines a ruleset for the unlock of a land
 class UnlockCondition:
@@ -33,12 +36,37 @@ class UnlockCondition:
             return Has(cond)
         
         if cond == "Anyland":
-            return HasAny(*[land
+            return Or(*[CanReachRegion(land)
                         for land in landlist
                         if not land == "Camelot"]) # It must not be neccessary to collect 30 or more Treasures in Camelot
         
+        if cond[:5] == "Treas":
+            num_treas: int = int(cond[5:])
+            match num_treas:
+                case 90:
+                    return Or(*[(UnlockCondition.get_inner_rule("Min2") & hard_logic_difficulty & required_treasures_50),
+                                     (UnlockCondition.get_inner_rule("Min4") & hard_logic_difficulty & required_treasures_25),
+                                     (UnlockCondition.get_inner_rule("Min9") & hard_logic_difficulty),
+                                     (UnlockCondition.get_inner_rule("Min3") & required_treasures_50),
+                                     (UnlockCondition.get_inner_rule("Min6") & required_treasures_25),
+                                     (UnlockCondition.get_inner_rule("Min14"))])
+                case 60:
+                    return Or(*[(UnlockCondition.get_inner_rule("Min2") & hard_logic_difficulty & required_treasures_50),
+                                     (UnlockCondition.get_inner_rule("Min3") & hard_logic_difficulty & required_treasures_25),
+                                     (UnlockCondition.get_inner_rule("Min6") & hard_logic_difficulty),
+                                     (UnlockCondition.get_inner_rule("Min3") & required_treasures_50),
+                                     (UnlockCondition.get_inner_rule("Min5") & required_treasures_25),
+                                     (UnlockCondition.get_inner_rule("Min9"))])
+                case 30:
+                    return Or(*[(UnlockCondition.get_inner_rule("Min1") & hard_logic_difficulty & required_treasures_50),
+                                     (UnlockCondition.get_inner_rule("Min2") & hard_logic_difficulty & required_treasures_25),
+                                     (UnlockCondition.get_inner_rule("Min3") & hard_logic_difficulty),
+                                     (UnlockCondition.get_inner_rule("Min2") & required_treasures_50),
+                                     (UnlockCondition.get_inner_rule("Min3") & required_treasures_25),
+                                     (UnlockCondition.get_inner_rule("Min5"))])
+
         if cond == "Alllands":
-            return HasAll(*[land
+            return And(*[CanReachRegion(land)
                         for land in landlist
                         if not land == "Camelot"]) # Camelot is not required for Hyperstone Quest
         
@@ -47,9 +75,43 @@ class UnlockCondition:
 
             ### CODE TO ADJUST IN ARCHIPELAGO 0.6.8
             if hasattr(rules, 'AtLeast'):
-                return AtLeast(min_number, *[Has(land) for land in landlist if not land == "Camelot"])
+                return AtLeast(min_number, *[CanReachRegion(land) for land in landlist if not land == "Camelot"])
             else:
-                return AtLeastHR(min_number, *[Has(land) for land in landlist if not land == "Camelot"])
+                return AtLeastHR(min_number, *[CanReachRegion(land) for land in landlist if not land == "Camelot"])
+        
+        ### CODE TO ADJUST IN ARCHIPELAGO 0.6.8
+        if cond == "SpecialIrradiatedField":
+            relevant = [CanReachRegion("Ruined City"), CanReachRegion("Emerald Mine"), CanReachRegion("Graveyard")]
+            return Or(*[Or(*relevant) & hard_logic_difficulty & required_treasures_50,
+                        AtLeastHR(2, *relevant) & hard_logic_difficulty | AtLeastHR(2, *relevant) & required_treasures_25,
+                        And(*relevant)
+                        ])
+        
+        ### CODE TO ADJUST IN ARCHIPELAGO 0.6.8
+        if cond == "SpecialFrogPark":
+            relevant = [CanReachRegion("Reptiles"), CanReachRegion("Zebra"), CanReachRegion("Jelly Kingdom")]
+            return Or(*[Or(*relevant) & hard_logic_difficulty & required_treasures_25,
+                        AtLeastHR(2, *relevant) & hard_logic_difficulty | AtLeastHR(2, *relevant) & required_treasures_25,
+                        And(*relevant)
+                        ])
+        
+        ### CODE TO ADJUST IN ARCHIPELAGO 0.6.8
+        if cond == "SpecialEclecticCity":
+            relevant = [CanReachRegion("Icy Land"), CanReachRegion("Land of Storms"), CanReachRegion("Palace"), CanReachRegion("Dead Cave")]
+            return Or(*[Or(*relevant) & hard_logic_difficulty & required_treasures_50,
+                        AtLeastHR(2,*relevant) & hard_logic_difficulty & required_treasures_25 | AtLeastHR(2,*relevant) & required_treasures_50,
+                        AtLeastHR(3,*relevant) & hard_logic_difficulty | AtLeastHR(3,*relevant) & required_treasures_25,
+                        And(*relevant)
+                        ])
+        
+        ### CODE TO ADJUST IN ARCHIPELAGO 0.6.8
+        if cond == "SpecialCursedCanyon":
+            relevant = [CanReachRegion("Alchemist Lab"), CanReachRegion("Carribean"), CanReachRegion("Ruined City"), CanReachRegion("Brown Island"), CanReachRegion("Land of Power")]
+            return Or(*[Or(*relevant) & hard_logic_difficulty & required_treasures_50,
+                        AtLeastHR(2, *relevant) & hard_logic_difficulty & required_treasures_25 | AtLeastHR(2, *relevant) & required_treasures_50,
+                        AtLeastHR(3, *relevant) & hard_logic_difficulty | AtLeastHR(3, *relevant) & required_treasures_25,
+                        AtLeastHR(4, *relevant)
+                        ])
 
         return False_()
 
@@ -78,37 +140,37 @@ unlock_condition_by_land_name: Dict[str, UnlockCondition] = {
     "Desert":                   UnlockCondition([["Always"]]),
     "Jungle":                   UnlockCondition([["Always"]]),
     "Alchemist Lab":            UnlockCondition([["Always"]]),
-    "Hall of Mirrors":          UnlockCondition([["Anyland"]]),
+    "Hall of Mirrors":          UnlockCondition([["Treas30"]]),
     "Graveyard":                UnlockCondition([["Always"]]),
     "Hell":                     UnlockCondition([["Min9"]]),
-    "R'Lyeh":                   UnlockCondition([["Anyland"]]),
+    "R'Lyeh":                   UnlockCondition([["Treas60"]]),
     "Land of Eternal Motion":   UnlockCondition([["Always"]]),
     "Cocytus":                  UnlockCondition([["Icy Land", "Hell"]]),
-    "Dry Forest":               UnlockCondition([["Anyland"]]),
-    "Vineyard":                 UnlockCondition([["Anyland"]]),
-    "Dead Cave":                UnlockCondition([["Living Cave"]]),
-    "Hive":                     UnlockCondition([["Anyland"]]),
+    "Dry Forest":               UnlockCondition([["Treas60"]]),
+    "Vineyard":                 UnlockCondition([["Treas60"]]),
+    "Dead Cave":                UnlockCondition([["Living Cave", "Treas60"]]),
+    "Hive":                     UnlockCondition([["Treas60"]]),
     "Emerald Mine":             UnlockCondition([["Palace"],["Dry Forest","Living Cave"]]),
-    "Land of Power":            UnlockCondition([["Hell"]]), #90
+    "Land of Power":            UnlockCondition([["Hell", "Treas90"]]),
     "Camelot":                  UnlockCondition([["Emerald Mine"]]),
     "Temple of Cthulhu":        UnlockCondition([["R'Lyeh"]]),
-    "Carribean":                UnlockCondition([["Anyland"]]),
-    "Red Rock Valley":          UnlockCondition([["Desert"]]),
-    "Minefield":                UnlockCondition([["Anyland"]]),
-    "Ocean":                    UnlockCondition([["Anyland"]]),
-    "Whirlpool":                UnlockCondition([["Anyland"]]),
-    "Palace":                   UnlockCondition([["Anyland"]]),
-    "Living Fjord":             UnlockCondition([["Anyland"]]),
-    "Ivory Tower":              UnlockCondition([["Anyland"]]),
-    "Zebra":                    UnlockCondition([["Land of Eternal Motion"]]),
+    "Carribean":                UnlockCondition([["Treas30"]]),
+    "Red Rock Valley":          UnlockCondition([["Desert","Treas60"]]),
+    "Minefield":                UnlockCondition([["Treas30"]]),
+    "Ocean":                    UnlockCondition([["Treas30"]]),
+    "Whirlpool":                UnlockCondition([["Treas30"]]),
+    "Palace":                   UnlockCondition([["Treas30"]]),
+    "Living Fjord":             UnlockCondition([["Treas30"]]),
+    "Ivory Tower":              UnlockCondition([["Treas30"]]),
+    "Zebra":                    UnlockCondition([["Land of Eternal Motion","Treas30"]]),
     "Elemental Planes":         UnlockCondition([["Windy Plains", "Living Fjord", "Dead Cave", "Dragon Chasms"],["Elemental Planes"]]),
-    "Land of Storms":           UnlockCondition([["Anyland"]]),
-    "Overgrown Woods":          UnlockCondition([["Jungle"]]),
+    "Land of Storms":           UnlockCondition([["Treas60"]]),
+    "Overgrown Woods":          UnlockCondition([["Jungle", "Treas60"]]),
     "Clearing":                 UnlockCondition([["Overgrown Woods"]]),
     "Haunted Woods":            UnlockCondition([["Graveyard"]]),
-    "Windy Plains":             UnlockCondition([["Anyland"]]),
-    "Rose Garden":              UnlockCondition([["Anyland"]]), #90
-    "Warped Coast":             UnlockCondition([["Anyland"]]),
+    "Windy Plains":             UnlockCondition([["Treas60"]]),
+    "Rose Garden":              UnlockCondition([["Treas90"]]),
+    "Warped Coast":             UnlockCondition([["Treas30"]]),
     "Galapagos":                UnlockCondition([["Dragon Chasms"]]),
     "Yendorian Forest":         UnlockCondition([["Ivory Tower"]]),
     "Dragon Chasms":            UnlockCondition([["Min20"]]), #TODO
@@ -117,23 +179,23 @@ unlock_condition_by_land_name: Dict[str, UnlockCondition] = {
     "Trollheim":                UnlockCondition([["Living Cave", "Dead Cave", "Red Rock Valley", "Land of Storms", "Overgrown Woods", "Living Fjord"]]),
     "Dungeon":                  UnlockCondition([["Palace", "Ivory Tower"]]),
     "Lost Mountain":            UnlockCondition([["Jungle", "Ivory Tower"]]),
-    "Reptiles":                 UnlockCondition([["Alchemist Lab"]]),
-    "Prairie":                  UnlockCondition([["Anyland"]]), #90
-    "Bull Dash":                UnlockCondition([["Anyland"]]), #90
-    "Volcanic Wasteland":       UnlockCondition([["Alchemist Lab"]]),
+    "Reptiles":                 UnlockCondition([["Alchemist Lab","Treas30"]]),
+    "Prairie":                  UnlockCondition([["Treas90"]]),
+    "Bull Dash":                UnlockCondition([["Treas90"]]),
+    "Volcanic Wasteland":       UnlockCondition([["Alchemist Lab","Treas60"]]),
     "Hunting Ground":           UnlockCondition([["Always"]]),
     "Blizzard":                 UnlockCondition([["Icy Land", "Windy Plains"]]),
-    "Terracotta Army":          UnlockCondition([["Anyland"]]), #90
+    "Terracotta Army":          UnlockCondition([["Treas90"]]),
     "Ruined City":              UnlockCondition([["Palace"],["Ruined City"],["Dungeon"],["Irradiated Field"]]),
-    "Jelly Kingdom":            UnlockCondition([["Alchemist Lab"]]),
-    "Brown Island":             UnlockCondition([["Anyland"]]),
+    "Jelly Kingdom":            UnlockCondition([["Alchemist Lab","Treas30"]]),
+    "Brown Island":             UnlockCondition([["Treas30"]]),
     "Free Fall":                UnlockCondition([["Ivory Tower", "Land of Eternal Motion"]]),
-    "Irradiated Field":         UnlockCondition([["Ruined City"],["Emerald Mine"],["Graveyard"]]),
-    "Wetland":                  UnlockCondition([["Anyland"]]),
-    "Frog Park":                UnlockCondition([["Reptiles"],["Zebra"],["Jelly Kingdom"]]),
-    "Eclectic City":            UnlockCondition([["Icy Land"],["Land of Storms"],["Palace"],["Dead Cave"]]),
-    "Cursed Canyon":            UnlockCondition([["Alchemist Lab"],["Carribean"],["Ruined City"],["Brown Island"],["Land of Power"]]),
-    "Dice Reserve":             UnlockCondition([["Anyland"]]), #90
+    "Irradiated Field":         UnlockCondition([["SpecialIrradiatedField"]]),
+    "Wetland":                  UnlockCondition([["Treas30"]]),
+    "Frog Park":                UnlockCondition([["SpecialFrogPark"]]),
+    "Eclectic City":            UnlockCondition([["SpecialEclecticCity"]]),
+    "Cursed Canyon":            UnlockCondition([["SpecialCursedCanyon"]]),
+    "Dice Reserve":             UnlockCondition([["Treas90"]]),
 }
 
 ### CODE TO REMOVE IN ARCHIPELAGO 0.6.8
