@@ -243,12 +243,6 @@ class AtLeastHR(NestedRule[TWorld], game = "Hyperrogue"):
 
         if len(clauses) < count:
             return False_().resolve(world)
-        if count == 1:
-            # Switch to Or which has more optimized handling
-            return Or.from_resolved(world, clauses)
-        if count == len(clauses):
-            # Switch to And which has more optimized handling
-            return And.from_resolved(world, clauses)
         return AtLeastHR.Resolved(
             tuple(clauses),
             count=count,
