@@ -135,12 +135,12 @@ class HyperrogueWorld(World):
 
 
     def create_items(self) -> None:
+        num_landsets = min(len(self.active_location_suffixes), 4)
         self.multiworld.itempool += [self.create_item(land_name)
                                      for land_name in landlist
-                                     for suff in self.active_location_suffixes.keys()
-                                     if not suff.__contains__("Extra")]
+                                     for i in range(num_landsets)]
         
-        num_fill = len(landlist)*(int(self.options.extra_location_10.value) + int(self.options.extra_location_25.value) + int(self.options.extra_location_50.value))
+        num_fill = len(landlist)*(len(self.active_location_suffixes) - num_landsets)
         num_start_orbs = ceil(num_fill * self.options.start_orb_fill_percentage * 1/100)
         self.multiworld.itempool += [self.create_item(self.random_orb())
                                      for i in range(num_start_orbs)]
